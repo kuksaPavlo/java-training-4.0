@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="Suite1" time-out="5000"  verbose="1" >
+    <parameter name="name" value="Ostap"/>
+    <parameter name="password" value="P@$sw0rd"/>
+    <test name="TestClassTwo" >
+<!--        <parameter name="name" value="Stepan"/>-->
+<!--        <parameter name="password" value="pass12345"/>-->
+        <classes>
+            <class name="example.TestClassTwo" />
+        </classes>
+    </test>
+</suite>
