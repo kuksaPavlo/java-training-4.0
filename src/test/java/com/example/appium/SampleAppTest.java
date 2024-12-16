@@ -8,6 +8,8 @@ import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.options.XCUITestOptions;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
+import io.appium.java_client.service.local.flags.GeneralServerFlag;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -22,40 +24,51 @@ public class SampleAppTest {
 
     @BeforeClass
     private void setUp() {
-        String platform = getenv("APPIUM_DRIVER");
+       String platform = getenv("APPIUM_DRIVER");
         platform = platform == null ? "ANDROID" : platform.toUpperCase();
         String path = System.getProperty("user.dir");
 
         if (platform.equals("ANDROID")) {
             var options = new UiAutomator2Options()
                     .setPlatformName("Android")
-                    .setDeviceName("PUT_YOUR_DEVICE_NAME_HERE")
-                    .setApp(Paths.get(path).resolve("ApiDemos-debug.apk").toString());
+                    .setDeviceName("Pixel_9")
+                    .setApp(Paths.get(path).resolve("ApiDemos-debug.apk").toString())
+                    .setAppActivity(".view.TextFields")
+                    .setShowChromedriverLog(true);
 
-            server = AppiumDriverLocalService.buildService(new AppiumServiceBuilder().usingAnyFreePort());
-            server.start();
+            server = AppiumDriverLocalService.buildService(new AppiumServiceBuilder()
+                    .usingPort(4723)
+                    .withArgument(GeneralServerFlag.BASEPATH, "/wd/hub"));
+
             driver = new AndroidDriver(server, options);
 
             ((InteractsWithApps) driver).activateApp("io.appium.android.apis");
         } else {
             var options = new XCUITestOptions()
                     .setPlatformName("iOS")
-                    .setPlatformVersion("PUT_YOUR_XCODE_VERSION_HERE")
+                    .setPlatformVersion("18.0")
                     .setAutomationName("XCuiTest")
-                    .setDeviceName("PUT_YOUR_DEVICE_NAME_HERE")
-                    .setApp(Paths.get(path).resolve("TestApp.app.zip").toString());
+                    .setDeviceName("iPhone 16")
+                    .setApp(Paths.get(path).resolve("TestApp.app.zip").toString())
+                    .setShowXcodeLog(true);
 
-            server = AppiumDriverLocalService.buildService(new AppiumServiceBuilder().usingAnyFreePort());
+
+            server = AppiumDriverLocalService.buildService(new AppiumServiceBuilder()
+                    .usingPort(4723)
+                    .withArgument(GeneralServerFlag.BASEPATH, "/wd/hub"));
+
             server.start();
+            System.out.println("Appium server started: " + server.isRunning());
             driver = new IOSDriver(server, options);
         }
     }
 
     @Test
     public void textFieldTest() {
-        // TODO initialise PageView and set "text" to its textField
+        PageView view = new PageView(driver);// TODO initialise PageView and set "text" to its textField
+        view.setTextField("test");
 
-        // TODO assert that textField equals to "text"
+        Assert.assertEquals(view.getTextField(),"test", "test was not");// TODO assert that textField equals to "text"
     }
 
     @AfterClass

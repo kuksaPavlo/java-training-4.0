@@ -17,6 +17,7 @@ repositories {
 dependencies {
     implementation 'org.testng:testng:7.9.0'
     implementation 'io.appium:java-client:9.3.0'
+
 }
 
 test {
